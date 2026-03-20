@@ -5,7 +5,9 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # ---- Pre requisites ----
+library(dplyr)
 library(ggplot2)
+library(moments)
 df <- read.csv("enhanced_student_habits_performance_dataset.csv")
 
 # ---- Univariate ----
@@ -53,6 +55,55 @@ ggplot(job_counts, aes(x = Status, y = Count, fill = Status)) +
 
 # ---- Bivariate ----
 
+# 1. Question: Which academic majors show the highest and lowest average exam performance?
+print("Average Exam Score by Major:")
+aggregate(exam_score ~ major, data = df, mean)
 
 
+# 2. Question: How does the level of exam anxiety impact the final exam scores of students?
+anxiety_trend <- df %>%
+  group_by(exam_anxiety_score) %>%
+  summarise(avg_exam = mean(exam_score, na.rm = TRUE))
 
+ggplot(anxiety_trend, aes(x = exam_anxiety_score, y = avg_exam)) +
+  geom_line(color = "#C0392B", size = 1.2) +
+  geom_point(color = "#2E6FAB", size = 3) +
+  labs(title = "Impact of Anxiety on Exam Performance",
+       x = "Anxiety Score",
+       y = "Average Exam Score") +
+  theme_light()
+
+
+# 3.Question: Does a student's reported stress level affect their level of motivation?
+stress_motivation_summary <- df %>%
+  group_by(stress_level) %>%
+  summarise(avg_motivation = mean(motivation_level, na.rm = TRUE))
+
+ggplot(stress_motivation_summary, aes(x = stress_level, y = avg_motivation)) +
+  geom_line(color = "#C0392B", size = 1.0) +
+  geom_point(color = "#2E6FAB", size = 2) +
+  scale_x_continuous(breaks = 1:10) +
+  labs(title = "Stress vs. Motivation",
+       x = "Stress Level (1-10)",
+       y = "Average Motivation Level") +
+  theme_light()
+
+
+# 4. Question: How do the distribution and consistency of study hours differ between students with part-time job or not?
+summary_table <- df %>%
+  group_by(part_time_job) %>%
+  summarise(
+    Mean = mean(study_hours_per_day, na.rm = TRUE),
+    SD = sd(study_hours_per_day, na.rm = TRUE),
+    Skewness = skewness(study_hours_per_day, na.rm = TRUE),
+    Kurtosis = kurtosis(study_hours_per_day, na.rm = TRUE)
+  )
+
+
+# 5. Question: What is the frequency of part-time job across the various majors?
+raw_tab <- table(df$major, df$part_time_job)
+ctab_df <- as.data.frame.matrix(raw_tab)
+colnames(ctab_df) <- paste("Has Job:", colnames(ctab_df))
+
+# ---- End of Program ----
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
