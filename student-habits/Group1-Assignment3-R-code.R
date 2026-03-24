@@ -1,6 +1,6 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # ---- STATS 203: Statistics and Probability for CS/IT Students ----
-# ---- Members: Aviles, Artates, Acob, Alapag (BSCS 2-4) ----
+# ---- Members: Aviles, Acob, Alapag (BSCS 2-4) ----
 # ---- Assignment #3: Exploratory Data Analysis Instructions ----
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -17,7 +17,7 @@ learning_style_counts <- table(df$learning_style)
 most_common_learning <- names(which.max(learning_style_counts))
 print(most_common_learning)
 
-# 2. Average amount of time spent studying
+# 2. What is the average stress level reported by the students?
 print("What is the average stress level reported by the students?: ")
 avg_stress_level <- mean(df$stress_level, na.rm = TRUE)
 print(avg_stress_level)
@@ -115,7 +115,8 @@ raw_tab <- table(df$major, df$part_time_job)
 ctab_df <- as.data.frame.matrix(raw_tab)
 colnames(ctab_df) <- paste("Has Job:", colnames(ctab_df))
 
-# 6. Question: What is the frequency of part-time jobs across the various majors?
+# 6. Question: How do different levels of stress and motivation interact to influence the exam scores of the students?
+
 heatmap_data <- df %>%
   group_by(stress_level, motivation_level) %>%
   summarise(avg_score = mean(exam_score, na.rm = TRUE), .groups = 'drop')
